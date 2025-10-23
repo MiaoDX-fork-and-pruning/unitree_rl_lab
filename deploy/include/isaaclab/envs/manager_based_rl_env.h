@@ -11,6 +11,7 @@
 #include "isaaclab/assets/articulation/articulation.h"
 #include "isaaclab/algorithms/algorithms.h"
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 namespace isaaclab
 {
@@ -41,6 +42,21 @@ public:
         }
 
         robot->update();
+
+        // Remap joystick velocity commands to keyboard-based control if available
+        // This keeps deploy.yaml unchanged (still refers to "velocity_commands")
+        // but uses persistent WASD mapping registered as "keyboard_velocity_commands".
+        try {
+            if (cfg["observations"]["velocity_commands"].IsDefined()) {
+                auto & map = observations_map();
+                if (map.count("keyboard_velocity_commands") > 0 && map["keyboard_velocity_commands"]) {
+                    map["velocity_commands"] = map["keyboard_velocity_commands"];
+                    spdlog::info("[Obs] velocity_commands -> keyboard_velocity_commands (WASD)");
+                }
+            }
+        } catch (...) {
+            // silently ignore if not present
+        }
 
         // load managers
         action_manager = std::make_unique<ActionManager>(cfg["actions"], this);

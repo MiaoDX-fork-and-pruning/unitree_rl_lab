@@ -4,6 +4,7 @@
 #pragma once
 
 #include "onnxruntime_cxx_api.h"
+#include <spdlog/spdlog.h>
 #include <mutex>
 
 namespace isaaclab
@@ -40,6 +41,10 @@ public:
         input_shape = input_type.GetTensorTypeAndShapeInfo().GetShape();
         Ort::TypeInfo output_type = session->GetOutputTypeInfo(0);
         output_shape = output_type.GetTensorTypeAndShapeInfo().GetShape();
+
+        spdlog::info("[ONNX] Loading model: {}", model_path);
+        spdlog::info("[ONNX] Input shape: [{} x {}]", (int)input_shape[0], (int)input_shape[1]);
+        spdlog::info("[ONNX] Output shape: [{} x {}]", (int)output_shape[0], (int)output_shape[1]);
 
         action.resize(output_shape[1]);
     }

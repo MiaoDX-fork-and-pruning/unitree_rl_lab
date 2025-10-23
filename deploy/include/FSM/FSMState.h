@@ -29,7 +29,12 @@ public:
     void pre_run()
     {
         lowstate->update();
-        if(keyboard) keyboard->update();
+        if(keyboard) {
+            keyboard->update();
+            if(keyboard->key() != "") {
+                spdlog::debug("[Keyboard] Key pressed: '{}'", keyboard->key());
+            }
+        }
     }
 
     void post_run()

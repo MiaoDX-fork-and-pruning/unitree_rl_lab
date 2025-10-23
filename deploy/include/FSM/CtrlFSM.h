@@ -53,10 +53,15 @@ private:
 
     void run_()
     {
+        static int counter = 0;
+        if(++counter % 1000 == 0) {  // Log every ~1 second (1000 * 0.001s)
+            spdlog::info("[FSM] Current state: {}", currentState->getStateString());
+        }
+
         currentState->pre_run();
         currentState->run();
         currentState->post_run();
-        
+
         // Check if need to change state
         int nextStateMode = 0;
         for(int i(0); i<currentState->registered_checks.size(); i++)
